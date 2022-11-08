@@ -67,3 +67,11 @@ const cartSlice = createSlice({
 export const cartActions = cartSlice.actions;
 
 export default cartSlice;
+
+// Sending the shopping card data to the backend.
+
+// For async code the first option inside the components using the useEffect hook. We can do inside the product.js whenever we are sending the data to the cart, we can add the useEffect hook.
+
+// Second option is to create action creater which would allow us to run async code these are the two main options. For this we will use firebase. Firebase is a great tool is don't require any backend codes so we can go to the firebase and we can create our account with firebase. It will allow us to create new firebase project.
+
+// if we directly add a product from the product item component, so it would be wrong. Because if we only send the data to the backend and it doesn't have any logic, reducer functions will be no use then. Because if we send any single product two times into the backend then the backend doesn't know that this product is already being part of the cart
