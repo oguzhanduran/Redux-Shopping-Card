@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { uiActions } from "./ui-slice";
 
 const cartSlice = createSlice({
   name: "cart",
@@ -6,10 +7,16 @@ const cartSlice = createSlice({
     itemsList: [],
     totalQuantity: 0,
     showCart: false,
+    changed: false, // we can check whenever the data will be changed then only we need to run this render. Then only we need to run this render.
   },
   reducers: {
+    replaceData(state, action) {
+      state.totalQuantity = action.payload.totalPrice;
+      state.itemsList = action.payload.itemsList;
+    }, // The data at the beginning is empty. Just replace the empty data with the data we have in the Firebase to update the content of the cart
     addToCart(state, action) {
       const newItem = action.payload;
+      state.changed = true; // When a cart add the notification will be shown.
 
       // if the item is already there we need to increase the item.
 
@@ -33,6 +40,7 @@ const cartSlice = createSlice({
     }, // if we use action paramater, it means that we will get an action from the user. when we click addToCart function, related product will send to reducer function. And it will update. With action.payload we will get the addToCart functionolity.
     removeFromCart(state, action) {
       // if there is a item we will decrease the quantity. if there is a one item. We will remove the item.
+      state.changed = true; // When a cart remove the notification will be shown.
 
       console.log("reached");
 

@@ -30,3 +30,5 @@ function Notification({ type, message }) {
 export default Notification;
 
 // By writing severity it will be dynamic.
+
+// Onclose means

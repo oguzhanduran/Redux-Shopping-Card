@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import Notification from "./components/Notification";
 import { useDispatch } from "react-redux";
 import { uiActions } from "./store/ui-slice";
+import { fetchData, sendCartData } from "./store/cart-actions";
 
 let isFirstRender = true;
 
@@ -15,50 +16,23 @@ function App() {
   const dispatch = useDispatch();
   const notification = useSelector((state) => state.ui.notification);
 
+  // whenever we are opening the application it is sending the data to the database when the first render is complete when the firstRender complete, the second render is completed. Whenever this request will successful whenever the application open this request will be run.
+
+  useEffect(() => {
+    if (cart.changed) {
+      dispatch(fetchData());
+    }
+  }, [dispatch]); // whenever we get the request the application will be open
+
   useEffect(() => {
     if (isFirstRender) {
       // we did it because we don't want to show notification on the first render on the screen.
       isFirstRender = false;
       return;
     }
-    const sendRequest = async () => {
-      // Send state as Sending request
-      dispatch(
-        uiActions.showNotification({
-          open: true, // When we add any data it will work.
-          message: "Sending Request",
-          type: "warning",
-        })
-      );
-      const res = await fetch(
-        "https://redux-http-ee070-default-rtdb.firebaseio.com/cartItems.json",
-        {
-          method: "PUT",
-          body: JSON.stringify(cart),
-        }
-      );
-      const data = await res.json();
-      // Send state as Request is successful
-      dispatch(
-        uiActions.showNotification({
-          open: true, // When we add any data it will work.
-          message: "Sent Request to Database Successfully",
-          type: "success",
-        })
-      );
-    };
 
-    sendRequest().catch((err) => {
-      // Send state as Error
-      dispatch(
-        uiActions.showNotification({
-          open: true, // When we add any data it will work.
-          message: "Sending Request failed",
-          type: "error",
-        })
-      );
-    });
-  }, [cart]); // cart value was changed put request will be sent to the backend. Whenever the data will be changed inside the Redux slices Redux reducers. The useEffect will be modified and it will be send the request to the redux by the HTTP.
+    dispatch(sendCartData(cart));
+  }, [cart, dispatch]); // cart value was changed put request will be sent to the backend. Whenever the data will be changed inside the Redux slices Redux reducers. The useEffect will be modified and it will be send the request to the redux by the HTTP.
 
   // I'am sending this request. But I am not doing anything with the response, which I will get from the server. So I'am not handling any type of potential errors that could occur during this fetch function. We will create a notification component so that we should be notified about the errors and then the state of the Redux that how and when the Redux state is updated. So first, we have to convert this fetch function into asynchoronous function.
 
@@ -70,7 +44,7 @@ function App() {
   return (
     <div className="App">
       {notification && (
-        <Notification type={notification.type} message={notification.message} />
+        <Notification type={notification.type} message={notification.message} /> // we sent the props to the notification component by getting from uiSlice.
       )}
       {!isLoggedIn && <Auth />}
       {isLoggedIn && <Layout />}
@@ -81,3 +55,5 @@ function App() {
 export default App;
 
 // // So we can first do the work on the fronend and let the Redux update the store. And second after that we will send the request to the server. So we do it in app.js.
+
+// Thunk is a function that delays an action until later. We can write an action creator as thunk. This does not return the action object but which returns another function which returns the action. We can run the other code before we dispatch the actual action object.
